@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "302952092267",
+    "firebase_url": "https://cub-mobile-60401.firebaseio.com",
+    "project_id": "cub-mobile-60401",
+    "storage_bucket": "cub-mobile-60401.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:302952092267:android:16f4e218ddb3c4ea9b172e",
+        "android_client_info": {
+          "package_name": "canaan.cub_mobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "302952092267-6eo34744eup7sjgn926qsfbt0ihcnrst.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "canaan.cub_mobile",
+            "certificate_hash": "a0e3fb70dc10e155eda868b67980873f3412ba9a"
+          }
+        },
+        {
+          "client_id": "302952092267-gbbil1ocmsco0cmq5np3t1u84jq9a9kv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCxcOmAJq99oW3gercRs8FTXKWEJS39jSo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "302952092267-gbbil1ocmsco0cmq5np3t1u84jq9a9kv.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "302952092267-pvloidcqcutoevvfqa0n7p06gv4v7ntg.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "canaan.cubMobile"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

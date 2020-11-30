@@ -380,7 +380,7 @@ class _UserDetailCardState extends State<UserDetailCard> {
                       Padding(
                         padding: const EdgeInsets.only(left: 50.0),
                         child: Text(
-                          "${Provider.of<User>(context, listen: false).userDetails["accType"]} Account:",
+                          "${Provider.git push origin masterof<User>(context, listen: false).userDetails["accType"]} Account:",
                           textAlign: TextAlign.start,
                           style: TextStyle(
                             fontSize: 17.0,

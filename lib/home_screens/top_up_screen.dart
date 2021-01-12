@@ -1,4 +1,5 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:country_pickers/country_pickers.dart';
 import 'package:cub_mobile/country_data.dart';
 import 'package:cub_mobile/loading_screen.dart';
 import 'package:cub_mobile/main.dart';
@@ -9,7 +10,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart' hide BuildContext;
 
 class TopUpScreen extends StatefulWidget {
-
   static String id = 'TopUpScreen';
 
   @override
@@ -86,7 +86,9 @@ class _TopUpScreenState extends State<TopUpScreen> {
                     ),
                   ),
                 ),
-                SizedBox(height: 30.0,),
+                SizedBox(
+                  height: 30.0,
+                ),
                 DividedCard(
                   height: 385,
                   text: "Top-up to",
@@ -102,7 +104,8 @@ class _TopUpScreenState extends State<TopUpScreen> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0),
+                        padding: const EdgeInsets.only(
+                            left: 8.0, right: 8.0, top: 8.0),
                         child: TextFieldWithCountryCode(
                           controller: _controller,
                           icon: FontAwesomeIcons.timesCircle,
@@ -117,7 +120,8 @@ class _TopUpScreenState extends State<TopUpScreen> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(left: 20.0, right: 20.0, top: 20.0, bottom: 5.0),
+                        padding: const EdgeInsets.only(
+                            left: 20.0, right: 20.0, top: 20.0, bottom: 5.0),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -137,7 +141,8 @@ class _TopUpScreenState extends State<TopUpScreen> {
                                 color: Colors.white,
                                 child: CarouselSlider.builder(
                                     itemCount: selection.length,
-                                    carouselController: buttonCarouselController1,
+                                    carouselController:
+                                        buttonCarouselController1,
                                     options: CarouselOptions(
                                       enableInfiniteScroll: true,
                                       viewportFraction: 0.90,
@@ -162,8 +167,8 @@ class _TopUpScreenState extends State<TopUpScreen> {
                                   builder: (context) => Container(
                                     color: Colors.white.withOpacity(0.70),
                                     child: Theme(
-                                      data: Theme.of(context)
-                                          .copyWith(primaryColor: primaryRedDark),
+                                      data: Theme.of(context).copyWith(
+                                          primaryColor: primaryRedDark),
                                       child: Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
@@ -200,7 +205,8 @@ class _TopUpScreenState extends State<TopUpScreen> {
                                                   setState(() {
                                                     textPage1 = 0;
                                                     buttonCarouselController1
-                                                        .animateToPage(textPage1);
+                                                        .animateToPage(
+                                                            textPage1);
                                                     index = 0;
                                                     onTap1 = true;
                                                     onTap2 = false;
@@ -229,7 +235,8 @@ class _TopUpScreenState extends State<TopUpScreen> {
                                                   setState(() {
                                                     textPage1 = 1;
                                                     buttonCarouselController1
-                                                        .animateToPage(textPage1);
+                                                        .animateToPage(
+                                                            textPage1);
                                                     index = 1;
                                                     onTap2 = true;
                                                     onTap1 = false;
@@ -260,19 +267,27 @@ class _TopUpScreenState extends State<TopUpScreen> {
                           ],
                         ),
                       ),
-
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
-                          Provider.of<CountryData>(context).getCountryFlag(20, 30),
-                          SizedBox(width: 10.0,),
+                          Image.asset(
+                            CountryPickerUtils.getFlagImageAssetPath(
+                                Provider.of<CountryData>(context).getIso()),
+                            height: 20.0,
+                            width: 30.0,
+                            fit: BoxFit.fill,
+                            package: "country_pickers",
+                          ),
+                          SizedBox(
+                            width: 10.0,
+                          ),
                           Provider.of<CountryData>(context).getCountryName(),
                         ],
                       ),
-
                       Padding(
-                        padding: const EdgeInsets.only(left: 22.0, right: 22.0, top: 22.0),
+                        padding: const EdgeInsets.only(
+                            left: 22.0, right: 22.0, top: 22.0),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: <Widget>[
@@ -291,7 +306,8 @@ class _TopUpScreenState extends State<TopUpScreen> {
                                 color: Colors.white,
                                 child: CarouselSlider.builder(
                                     itemCount: nSelection.length,
-                                    carouselController: buttonCarouselController,
+                                    carouselController:
+                                        buttonCarouselController,
                                     options: CarouselOptions(
                                       enableInfiniteScroll: true,
                                       viewportFraction: 0.90,
@@ -316,8 +332,8 @@ class _TopUpScreenState extends State<TopUpScreen> {
                                   builder: (context) => Container(
                                     color: Colors.white.withOpacity(0.70),
                                     child: Theme(
-                                      data: Theme.of(context)
-                                          .copyWith(primaryColor: primaryRedDark),
+                                      data: Theme.of(context).copyWith(
+                                          primaryColor: primaryRedDark),
                                       child: Column(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
@@ -354,16 +370,20 @@ class _TopUpScreenState extends State<TopUpScreen> {
                                                   setState(() {
                                                     textPage = 0;
                                                     buttonCarouselController
-                                                        .animateToPage(textPage);
+                                                        .animateToPage(
+                                                            textPage);
                                                     nIndex = 0;
                                                     nOntap[0] = true;
                                                     nOntap[1] = false;
                                                     nOntap[2] = false;
                                                     nOntap[3] = false;
                                                     ntextColor[0] = primaryRed;
-                                                    ntextColor[1] = Colors.black;
-                                                    ntextColor[2] = Colors.black;
-                                                    ntextColor[3] = Colors.black;
+                                                    ntextColor[1] =
+                                                        Colors.black;
+                                                    ntextColor[2] =
+                                                        Colors.black;
+                                                    ntextColor[3] =
+                                                        Colors.black;
                                                     Navigator.pop(context);
                                                   });
                                                 },
@@ -387,16 +407,20 @@ class _TopUpScreenState extends State<TopUpScreen> {
                                                   setState(() {
                                                     textPage = 1;
                                                     buttonCarouselController
-                                                        .animateToPage(textPage);
+                                                        .animateToPage(
+                                                            textPage);
                                                     nIndex = 1;
                                                     nOntap[1] = true;
                                                     nOntap[0] = false;
                                                     nOntap[2] = false;
                                                     nOntap[3] = false;
                                                     ntextColor[1] = primaryRed;
-                                                    ntextColor[0] = Colors.black;
-                                                    ntextColor[2] = Colors.black;
-                                                    ntextColor[3] = Colors.black;
+                                                    ntextColor[0] =
+                                                        Colors.black;
+                                                    ntextColor[2] =
+                                                        Colors.black;
+                                                    ntextColor[3] =
+                                                        Colors.black;
                                                     Navigator.pop(context);
                                                   });
                                                 },
@@ -420,16 +444,20 @@ class _TopUpScreenState extends State<TopUpScreen> {
                                                   setState(() {
                                                     textPage = 2;
                                                     buttonCarouselController
-                                                        .animateToPage(textPage);
+                                                        .animateToPage(
+                                                            textPage);
                                                     nIndex = 2;
                                                     nOntap[2] = true;
                                                     nOntap[1] = false;
                                                     nOntap[0] = false;
                                                     nOntap[3] = false;
                                                     ntextColor[2] = primaryRed;
-                                                    ntextColor[1] = Colors.black;
-                                                    ntextColor[0] = Colors.black;
-                                                    ntextColor[3] = Colors.black;
+                                                    ntextColor[1] =
+                                                        Colors.black;
+                                                    ntextColor[0] =
+                                                        Colors.black;
+                                                    ntextColor[3] =
+                                                        Colors.black;
                                                     Navigator.pop(context);
                                                   });
                                                 },
@@ -453,16 +481,20 @@ class _TopUpScreenState extends State<TopUpScreen> {
                                                   setState(() {
                                                     textPage = 3;
                                                     buttonCarouselController
-                                                        .animateToPage(textPage);
+                                                        .animateToPage(
+                                                            textPage);
                                                     nIndex = 3;
                                                     nOntap[3] = true;
                                                     nOntap[1] = false;
                                                     nOntap[2] = false;
                                                     nOntap[0] = false;
                                                     ntextColor[3] = primaryRed;
-                                                    ntextColor[1] = Colors.black;
-                                                    ntextColor[2] = Colors.black;
-                                                    ntextColor[0] = Colors.black;
+                                                    ntextColor[1] =
+                                                        Colors.black;
+                                                    ntextColor[2] =
+                                                        Colors.black;
+                                                    ntextColor[0] =
+                                                        Colors.black;
                                                     Navigator.pop(context);
                                                   });
                                                 },
@@ -532,8 +564,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
                   ),
                 ),
                 RedRoundedRectButton(
-                  ontap: () =>
-                     Navigator.pushNamed(context, LoadingScreen.id),
+                  ontap: () => Navigator.pushNamed(context, LoadingScreen.id),
                   text: "Confirm",
                   width: 300.0,
                   height: 40.0,
@@ -547,4 +578,3 @@ class _TopUpScreenState extends State<TopUpScreen> {
     );
   }
 }
-

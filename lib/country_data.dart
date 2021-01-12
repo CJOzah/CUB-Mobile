@@ -22,19 +22,9 @@ class CountryData extends ChangeNotifier{
 
   Country getCountry() {
     return selectedCountry;
-    notifyListeners();
   }
 
-  Widget getCountryFlag( double height,
-  double width){
-    return Image.asset(
-      CountryPickerUtils.getFlagImageAssetPath(selectedCountry.isoCode),
-      height: height,
-      width: width,
-      fit: BoxFit.fill,
-      package: "country_pickers",
-    );
-  }
+
 
   String getPhoneCode(){
     return selectedCountry.phoneCode.toString();
@@ -46,7 +36,6 @@ class CountryData extends ChangeNotifier{
 
   Widget getCountryName() {
     return Text(selectedCountry.name);
-    notifyListeners();
   }
 
   Widget _buildDialogItem(Country country) => Row(
@@ -97,7 +86,7 @@ class CountryData extends ChangeNotifier{
           ),
           onValuePicked: (Country country) {
             selectedCountry = country;
-            Provider.of<CountryData>(context).setCountry(selectedCountry);
+            Provider.of<CountryData>(context, listen: false).setCountry(selectedCountry);
           },
 
           itemBuilder: _buildDialogItem,

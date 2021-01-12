@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import 'contact_us.dart';
+
 class MessageScreen extends StatelessWidget {
 
   static String id = 'MessageScreen';
@@ -37,7 +39,7 @@ class MessageScreen extends StatelessWidget {
               ),
               child: iconButton(
                 icon: Icons.message,
-                size: 15.0,
+                size: 14.0,
                 color: primaryRed,
               )),
             ),
@@ -81,34 +83,42 @@ class MessageScreen extends StatelessWidget {
                       ),
                     ),
                     HorizontalLine(width: 400.0, height: 0.5, color: dividerColor,),
-                    Padding(
-                      padding: EdgeInsets.only(left: 15.0),
-                      child: Row(
-                        children: <Widget>[
-                          LetterIcons(text: "C", color: Color(0xFFE45E53),),
-                          SizedBox(
-                            width: 12.0,
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: <Widget>[
-                              Text(
-                                "Contact Us",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 17.0,
+                    InkWell(
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 15.0),
+                        child: Row(
+                          children: <Widget>[
+                            LetterIcons(text: "C", color: Color(0xFFE45E53),),
+                            SizedBox(
+                              width: 12.0,
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: <Widget>[
+                                Text(
+                                  "Contact Us",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 17.0,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                "Good day, Welcome to the Bank",
-                                style: TextStyle(
-                                  color: dividerColor,
+                                Text(
+                                  "Good day, Welcome to CUB",
+                                  style: TextStyle(
+                                    color: dividerColor,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ContactUs(),
                           ),
-                        ],
                       ),
                     ),
                   ],

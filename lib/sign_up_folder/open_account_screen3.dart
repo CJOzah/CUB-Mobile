@@ -7,7 +7,6 @@ import 'package:cub_mobile/utils.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:provider/provider.dart' hide BuildContext;
@@ -48,88 +47,99 @@ class _OpenAccountScreen3State extends State<OpenAccountScreen3> {
     @required String pin,
     @required String password,
     @required String accType,
-    @required String accBal,
+    String accBal = "10000",
     @required mobileNumber
   }) async {
     try {
-      Map<String, dynamic> adminFiles;
-      await FirebaseFirestore.instance.collection("admin")
-          .doc("20000124").get()
-          .then((value) {
-        adminFiles = value.data();
+
+      setState(() {
+        showSpinner = true;
       });
-
-      var rand = new Random();
-      String accountNumber =  (new List.generate(10, (_) => rand.nextInt(10))).join();
-
-      bool acc = false;
-      adminFiles.forEach((key, value) {while(acc = false){
-        var rand = new Random();
-        String accountNumber = (new List.generate(10, (_) => rand.nextInt(10))).join();
-
-        if(accountNumber != key) return true; }
-      });
-      print(accountNumber);
-      accountNum = accountNumber;
-
-
-      auth.UserCredential newUser = await
-      _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      if (newUser != null) {
-        final _firestoreInstance = FirebaseFirestore.instance;
+      if (await checkInternetConnectivity(context) == false) {
+        setState(() {
+          showSpinner = false;
+        });
+        return;
+      }
+      else {
+        auth.UserCredential newUser = await
+        _auth.createUserWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
 
         try {
-          await
-          _firestoreInstance.collection("users").doc(newUser.user.uid).set(
-              {
-                "accountNumber": accountNumber,
-                "id": newUser.user.uid,
-                "email": newUser.user.email,
-                "firstName": firstName,
-                "lastName": lastName,
-                "bvn": bvn,
-                "dob": dob,
-                "address": address,
-                "pin": pin,
-                "password": password,
-                "accType": accType,
-                "mobileNumber": mobileNumber,
-                "accBal": accBal
-              }
-          );
-          await _firestoreInstance.collection("admin").doc("20000124").set(
-              {
-                accountNumber :
-            {
-              "id": newUser.user.uid,
-              "email": newUser.user.email,
-              "firstName": firstName,
-              "lastName": lastName,
-              "bvn": bvn,
-              "dob": dob,
-              "address": address,
-              "pin": pin,
-              "password": password,
-              "accType": accType,
-              "mobileNumber": mobileNumber,
-              "accBal": accBal
-            },
-          }, SetOptions(merge: true));
+          await newUser.user.sendEmailVerification();
+          return newUser.user.uid;
+        } catch (e) {
+          print("An error occured while trying to send email verification");
+          print(e.message);
+        }
 
-    } catch (e) {
-    return null;
-    }
+        print(newUser.user.uid);
+        if (newUser != null) {
+          var rand = new Random();
+          String accountNumber = (new List.generate(
+              10, (_) => rand.nextInt(10))).join();
 
+          print(accountNumber);
+          accountNum = accountNumber;
+
+          final _firestoreInstance = FirebaseFirestore.instance;
+
+          try {
+            await
+            _firestoreInstance.collection("users").doc(newUser.user.uid).set(
+                {
+                  "accountNumber": accountNumber,
+                  "id": newUser.user.uid,
+                  "email": newUser.user.email,
+                  "firstName": firstName,
+                  "lastName": lastName,
+                  "bvn": bvn,
+                  "dob": dob,
+                  "address": address,
+                  "pin": pin,
+                  "password": password,
+                  "accType": accType,
+                  "mobileNumber": mobileNumber,
+                  "accBal": accBal
+                }
+            );
+            await _firestoreInstance.collection("admin").doc("20000124").set(
+                {
+                  accountNumber:
+                  {
+                    "id": newUser.user.uid,
+                    "email": newUser.user.email,
+                    "firstName": firstName,
+                    "lastName": lastName,
+                    "bvn": bvn,
+                    "dob": dob,
+                    "address": address,
+                    "pin": pin,
+                    "password": password,
+                    "accType": accType,
+                    "mobileNumber": mobileNumber,
+                    "accBal": accBal
+                  },
+                }, SetOptions(merge: true));
+          } catch (e) {
+            return null;
+          }
+        }
+
+        Navigator.of(context).pushNamedAndRemoveUntil(
+            Home.id, (Route<dynamic> route) => false);
+        openMessageDialogue(context, SignUpMessage(
+          text: "Account Created Successfully, Your Account Number is: $accountNumber",
+          color: Color(0xFF71C341),
+          icon: FontAwesomeIcons.check,
+          text2: "Success",));
+
+
+        return newUser.user != null;
       }
-
-      Navigator.of(context).pushNamedAndRemoveUntil(Home.id, (Route<dynamic> route) => false);
-      openMessageDialogue(context, SignUpMessage(text: "Account Created Successfully, Your Account Number is: $accountNumber", color: Color(0xFF71C341), icon: FontAwesomeIcons.check, text2: "Success",));
-
-
-      return newUser.user != null;
     }catch (e) {
       openMessageDialogue(context, SignUpMessage(text: "Something went wrong please try again", color: primaryRed, icon: Icons.close, text2: "Failed",));
       print(e);
@@ -153,7 +163,7 @@ class _OpenAccountScreen3State extends State<OpenAccountScreen3> {
           padding: const EdgeInsets.only(right: 50.0),
           child: Center(
             child: Text(
-              "New to Banking",
+              "New to CUB",
               style: TextStyle(
                 fontSize: 18.0,
                 color: Colors.black,
@@ -164,9 +174,8 @@ class _OpenAccountScreen3State extends State<OpenAccountScreen3> {
       ),
       body: ModalProgressHUD(
         inAsyncCall: showSpinner,
-        progressIndicator: SpinKitFadingCircle(
-          color: primaryRed,
-          size: 100.0,
+        progressIndicator: CircularProgressIndicator(
+          backgroundColor: dividerColor,
         ),
         child: SafeArea(
           child: SingleChildScrollView(
@@ -175,10 +184,10 @@ class _OpenAccountScreen3State extends State<OpenAccountScreen3> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                    child: FormProgressIndicator(page:[ true, true, true], color1: primaryRed, color2: primaryRed,),
-                  ),
+                  // Padding(
+                  //   padding: const EdgeInsets.only(left: 8.0, right: 8.0),
+                  //   child: FormProgressIndicator(page:[ true, true, true], color1: primaryRed, color2: primaryRed,),
+                  // ),
                   SizedBox(height: 10.0,),
                   Padding(
                     padding: const EdgeInsets.all(8.0),

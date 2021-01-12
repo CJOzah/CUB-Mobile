@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cub_mobile/main.dart';
+import 'package:cub_mobile/notification_handler.dart';
 import 'package:cub_mobile/sign_in_folder/categories/banking_folder/banking_screen.dart';
 import 'package:cub_mobile/sign_in_folder/categories/lifestyle_folder/lifestyle_screen.dart';
 import 'package:cub_mobile/utils.dart';
@@ -27,10 +29,21 @@ class _SignInCategoryState extends State<SignInCategory> {
   int inDex;
 
   @override
+  void initState() {
+    if(Platform.isIOS){
+      NotificationHandler().getIOSPermission();
+    } else{
+      NotificationHandler().saveTokenAndroid();
+    }
+
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButt(),
-      body: SafeArea(
+      body: SingleChildScrollView(
+      child: SafeArea(
         child: Container(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -200,35 +213,7 @@ class _SignInCategoryState extends State<SignInCategory> {
           ),
         ),
       ),
+    )
     );
   }
 }
-
-class FloatingActionButt extends StatelessWidget {
-  const FloatingActionButt({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12.0, right: 5.0),
-      child: Container(
-          height: 48.0,
-          width: 48.0,
-          decoration: BoxDecoration(
-            color: primaryRed,
-            borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(30.0),
-                bottomLeft: Radius.circular(30.0),
-                bottomRight: Radius.circular(30.0)),
-          ),
-          child: iconButton(
-            function: () => Navigator.pushNamed(context, MessageScreen.id),
-            icon: Icons.message,
-            color: Colors.white,
-          )),
-    );
-  }
-}
-

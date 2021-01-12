@@ -7,6 +7,7 @@ import 'package:cub_mobile/message_screen.dart';
 import 'package:cub_mobile/profile_screen.dart';
 import 'package:cub_mobile/sign_in_folder/categories/banking_folder/banking_screen.dart';
 import 'package:cub_mobile/sign_in_folder/categories/banking_folder/banking_screen_categories/send_money_screen.dart';
+import 'package:cub_mobile/sign_in_folder/categories/banking_folder/banking_screen_categories/transfer_success_dialogue.dart';
 import 'package:cub_mobile/sign_in_folder/categories/banking_folder/menu_screen.dart';
 import 'package:cub_mobile/sign_in_folder/categories/lifestyle_folder/lifestyle_screen.dart';
 import 'package:cub_mobile/sign_in_folder/categories/lifestyle_folder/menu_screen_lifestyle.dart';
@@ -21,6 +22,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart' hide BuildContext;
 
 import 'country_data.dart';
+import 'sign_in_folder/categories/banking_folder/banking_screen_categories/transaction_history.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -86,6 +88,8 @@ class CUB extends StatelessWidget {
             MessageScreen.id: (context) => MessageScreen(),
             ProfileScreen.id: (context) => ProfileScreen(),
             SendMoneyScreen.id: (context) => SendMoneyScreen(),
+            TransferSuccessDialogue.id: (context) => TransferSuccessDialogue(),
+            TransactionHistory.id: (context) => TransactionHistory(),
           },
           debugShowCheckedModeBanner: false,
           theme: _appTheme(),

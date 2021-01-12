@@ -29,6 +29,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
     super.initState();
     _removeLoading();
   }
+
   @override
   void dispose() {
     super.dispose();
@@ -38,21 +39,25 @@ class _LoadingScreenState extends State<LoadingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          SpinKitFadingCircle(
-            color: primaryRed,
-            size: 100.0,
-          ),
-          Text(
-            'Processing!',
-            style: TextStyle(
-              color: primaryRed,
-              fontSize: 20.0,
+        backgroundColor: Color(0xFFB72F20),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Center(
+              child: Container(
+                height: MediaQuery.of(context).size.height/2,
+                width: MediaQuery.of(context).size.width/1,
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("images/web_hi_res_512.png"),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

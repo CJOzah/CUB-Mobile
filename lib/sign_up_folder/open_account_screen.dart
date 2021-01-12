@@ -43,7 +43,7 @@ class _OpenAccountScreenState extends State<OpenAccountScreen> {
           padding: const EdgeInsets.only(right: 50.0),
           child: Center(
             child: Text(
-              "New to Banking",
+              "New to CUB",
               style: TextStyle(
                 fontSize: 18.0,
                 color: Colors.black,
@@ -59,14 +59,14 @@ class _OpenAccountScreenState extends State<OpenAccountScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 0.0),
-                  child: FormProgressIndicator(
-                    page: [true, false, false],
-                    color2: dividerColor,
-                    color1: dividerColor,
-                  ),
-                ),
+                // Padding(
+                //   padding: const EdgeInsets.only(bottom: 0.0),
+                //   child: FormProgressIndicator(
+                //     page: [true, false, false],
+                //     color2: dividerColor,
+                //     color1: dividerColor,
+                //   ),
+                // ),
                 Padding(
                   padding: const EdgeInsets.only(
                       top: 12.0, right: 12.0, bottom: 12.0),
@@ -140,11 +140,11 @@ class _OpenAccountScreenState extends State<OpenAccountScreen> {
                         textInputType: TextInputType.number,
                         validator: (String value) {
                           if (value.isEmpty ||
-                              (value.length < 10 || value.length > 10)) {
+                              (value.length < 9 || value.length > 10)) {
                             return "";
                           }
                           if (!RegExp(
-                              r'^(([1]{1}[9]{1}[9]{1}\d{1})|([2-9]{1}\d{3}))\-[0,1]?\d{1}\-(([0-2]?\d{1})|([3][0,1]{1}))$')
+                              r'^(([1]{1}[9]{1}[9]{1}\d{1})|([2-9]{1}\d{3}))\-[0-2]?\d{1}\-(([0-2]?\d{1})|([3][0,1]{1}))$')
                               .hasMatch(value)) {
                             return '';
                           }

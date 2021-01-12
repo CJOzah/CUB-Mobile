@@ -56,7 +56,7 @@ class _OpenAccountScreen2State extends State<OpenAccountScreen2> {
                       padding: const EdgeInsets.only(right: 120.0),
                       child: Center(
                         child: Text(
-                          "New to Banking",
+                          "New to CUB",
                           style: TextStyle(
                             fontSize: 18.0,
                             color: Colors.black,
@@ -69,11 +69,11 @@ class _OpenAccountScreen2State extends State<OpenAccountScreen2> {
                 Container(
                   margin: EdgeInsets.only(
                       top: 10, bottom: 15, left: 10.0, right: 10.0),
-                  child: FormProgressIndicator(
-                    page: [true, true, false],
-                    color1: primaryRed,
-                    color2: dividerColor,
-                  ),
+                  // child: FormProgressIndicator(
+                  //   page: [true, true, false],
+                  //   color1: primaryRed,
+                  //   color2: dividerColor,
+                  // ),
                 ),
                 Container(
                   margin: EdgeInsets.only(bottom: 10, left: 10.0),

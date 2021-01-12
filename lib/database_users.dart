@@ -13,7 +13,7 @@ class User extends ChangeNotifier{
   String pin;
   String password;
   String accType;
-  String accBal = "4999";
+  String accBal;
 
   Map<String, dynamic> userDetails;
 
@@ -44,6 +44,10 @@ class User extends ChangeNotifier{
 
   void setUserID(String id){
     this.id = id;
+    notifyListeners();
+  }
+  void clearUser(){
+    userDetails.clear();
     notifyListeners();
   }
   String getUserID() {

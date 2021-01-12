@@ -1,11 +1,18 @@
+import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:cub_mobile/home_screens/home.dart';
 import 'package:cub_mobile/home_screens/more_screen.dart';
+import 'package:cub_mobile/home_screens/top_up_screen.dart';
 import 'package:cub_mobile/main.dart';
+import 'package:cub_mobile/sign_in_folder/categories/banking_folder/banking_screen_categories/transaction_history.dart';
 import 'package:cub_mobile/sign_in_folder/categories/lifestyle_folder/lifestyle_screen.dart';
 import 'package:cub_mobile/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:provider/provider.dart';
+import 'package:cub_mobile/database_users.dart';
+
+import 'banking_screen_categories/send_money_screen.dart';
 
 
 class MenuScreen extends StatefulWidget {
@@ -16,12 +23,156 @@ class MenuScreen extends StatefulWidget {
   _MenuScreenState createState() => _MenuScreenState();
 }
 
-class _MenuScreenState extends State<MenuScreen> {
+class _MenuScreenState extends State<MenuScreen> with TickerProviderStateMixin {
 
   bool sendMoneyDrop = false, paymentsDrop = false, loansDrop = false, othersDrop = false;
 
   IconData SendMoneydropdownIcon = Icons.arrow_drop_down,
       PaymentsdropdownIcon = Icons.arrow_drop_down, loansDropDown = Icons.arrow_drop_down, othersDropDown = Icons.arrow_drop_down;
+
+  AnimationController _animationController;
+  Animation _colorTween;
+
+  void openComingSoonDialogue(BuildContext context) {
+    _animationController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 5000));
+    _colorTween = ColorTween(begin: primaryRedDark, end: Colors.white)
+        .animate(_animationController);
+    _animationController.forward();
+    showDialog(
+      context: context,
+      builder: (context) =>
+          Theme(
+            data: Theme.of(context).copyWith(
+                primaryColor: primaryRedLight),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  margin: EdgeInsets.only(left: 30.0, right: 30.0),
+                  elevation: 10.0,
+                  semanticContainer: true,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: primaryRedDark,
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    height: 250.0,
+                    width: double.infinity,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                iconButton(
+                                  function: null, icon: Icons.more_vert,
+                                  size: 20.0,
+                                  color: Colors.white,
+                                ),
+                                iconButton(function: null, icon: Icons.share,
+                                  size: 20.0,
+                                  color: Colors.white,
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                iconButton(function: null, icon: Icons.close,
+                                  size: 20.0,
+                                  color: primaryRedLight,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        TextLiquidFill(
+                          text: 'COMING SOON',
+                          boxBackgroundColor: primaryRedDark,
+                          waveColor: Colors.white,
+                          textStyle: TextStyle(
+                            fontSize: 40.0,
+                            fontFamily: "Horizon",
+                          ),
+                          boxHeight: 40.0,
+                          boxWidth: 280.0,
+                        ),
+                        ColorizeAnimatedTextKit(
+                          text: [
+                            "Hi, This feature is coming soon",
+                          ],
+                          isRepeatingAnimation: false,
+                          textStyle: TextStyle(
+                              fontSize: 12.0,
+                              fontFamily: "Horizon"
+                          ),
+                          colors: [
+                            Colors.white,
+                            primaryRed,
+                            Colors.white,
+                          ],
+                          textAlign: TextAlign.start,
+                        ),
+                        AnimatedBuilder(
+                          animation: _colorTween,
+                          builder: (context, child) =>
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 100.0, right: 100.0),
+                                child: FlatButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  height: 35.0,
+                                  minWidth: double.infinity,
+                                  color: Colors.transparent,
+                                  shape: RoundedRectangleBorder(
+                                    side: BorderSide(
+                                        color: _colorTween.value, width: 2.0),
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                  child: Text("OK", style: TextStyle(
+                                      fontSize: 15.0, color: Colors.white),),
+                                ),
+                              ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 20.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Tapables(
+                                text: "Contact Us", ontap: null, color: Colors
+                                  .white, size: 12.0,),
+                              SizedBox(width: 20.0,),
+                              Tapables(
+                                text: "Unsubscribe", ontap: null, color: Colors
+                                  .white, size: 12.0,),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +198,7 @@ class _MenuScreenState extends State<MenuScreen> {
                         width: 35.0,
                         containerColor: Color(0xFF707070),
                         iconColor: Colors.white,
+                        onpressed: () => Navigator.pushNamed(context, Home.id),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top:3.0, bottom: 6.0),
@@ -92,6 +244,8 @@ class _MenuScreenState extends State<MenuScreen> {
                         width: 35.0,
                         containerColor: Color(0xFF707070),
                         iconColor: Colors.white,
+                        onpressed: () =>  openComingSoonDialogue
+                          (context),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top:3.0, bottom: 6.0),
@@ -105,6 +259,7 @@ class _MenuScreenState extends State<MenuScreen> {
                         width: 35.0,
                         containerColor: Color(0xFF707070),
                         iconColor: Colors.white,
+                        onpressed: () => Navigator.pushNamed(context, TopUpScreen.id),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top:3.0, bottom: 6.0),
@@ -120,6 +275,8 @@ class _MenuScreenState extends State<MenuScreen> {
                             width: 35.0,
                             containerColor: Color(0xFF707070),
                             iconColor: Colors.white,
+                            onpressed: () =>  openComingSoonDialogue
+                              (context),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(left: 48.0),
@@ -150,6 +307,8 @@ class _MenuScreenState extends State<MenuScreen> {
                         width: 35.0,
                         containerColor: Color(0xFF707070),
                         iconColor: Colors.white,
+                        onpressed: () =>  openComingSoonDialogue
+                          (context),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top:3.0, bottom: 6.0),
@@ -163,6 +322,8 @@ class _MenuScreenState extends State<MenuScreen> {
                         width: 35.0,
                         containerColor: Color(0xFF707070),
                         iconColor: Colors.white,
+                        onpressed: () =>  openComingSoonDialogue
+                          (context),
                       ),
                       Padding(
                         padding: const EdgeInsets.only(top:3.0, bottom: 6.0),
@@ -178,6 +339,8 @@ class _MenuScreenState extends State<MenuScreen> {
                             width: 35.0,
                             containerColor: Color(0xFF707070),
                             iconColor: Colors.white,
+                            onpressed: () =>  openComingSoonDialogue
+                              (context),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(left: 78.0),
@@ -210,6 +373,8 @@ class _MenuScreenState extends State<MenuScreen> {
                             width: 35.0,
                             containerColor: Color(0xFF707070),
                             iconColor: Colors.white,
+                            onpressed: () =>  openComingSoonDialogue
+                              (context),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(left: 78.0),
@@ -264,7 +429,9 @@ class _MenuScreenState extends State<MenuScreen> {
                       height: 35.0,
                       width: 35.0,
                       iconColor: Colors.white,
-                      onpressed: () async {await auth.FirebaseAuth.instance.signOut(); Navigator.of(context).pushNamedAndRemoveUntil(Home.id, (Route<dynamic> route) => false);},
+                      onpressed: () async {await auth.FirebaseAuth.instance.signOut();
+                      Provider.of<User>(context, listen: false).clearUser();
+                      Navigator.of(context).pushNamedAndRemoveUntil(Home.id, (Route<dynamic> route) => false);},
                     ),
                   ],
                 ),
@@ -277,10 +444,160 @@ class _MenuScreenState extends State<MenuScreen> {
   }
 }
 
-class SendMoneyMoreItems extends StatelessWidget {
+class SendMoneyMoreItems extends StatefulWidget {
   const SendMoneyMoreItems({
     Key key,
   }) : super(key: key);
+
+  @override
+  _SendMoneyMoreItemsState createState() => _SendMoneyMoreItemsState();
+}
+
+class _SendMoneyMoreItemsState extends State<SendMoneyMoreItems> with TickerProviderStateMixin {
+
+  AnimationController _animationController;
+  Animation _colorTween;
+
+  void openComingSoonDialogue(BuildContext context) {
+    _animationController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 5000));
+    _colorTween = ColorTween(begin: primaryRedDark, end: Colors.white)
+        .animate(_animationController);
+    _animationController.forward();
+    showDialog(
+      context: context,
+      builder: (context) =>
+          Theme(
+            data: Theme.of(context).copyWith(
+                primaryColor: primaryRedLight),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  margin: EdgeInsets.only(left: 30.0, right: 30.0),
+                  elevation: 10.0,
+                  semanticContainer: true,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: primaryRedDark,
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    height: 250.0,
+                    width: double.infinity,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                iconButton(
+                                  function: null, icon: Icons.more_vert,
+                                  size: 20.0,
+                                  color: Colors.white,
+                                ),
+                                iconButton(function: null, icon: Icons.share,
+                                  size: 20.0,
+                                  color: Colors.white,
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                iconButton(function: null, icon: Icons.close,
+                                  size: 20.0,
+                                  color: primaryRedLight,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        TextLiquidFill(
+                          text: 'COMING SOON',
+                          boxBackgroundColor: primaryRedDark,
+                          waveColor: Colors.white,
+                          textStyle: TextStyle(
+                            fontSize: 40.0,
+                            fontFamily: "Horizon",
+                          ),
+                          boxHeight: 40.0,
+                          boxWidth: 280.0,
+                        ),
+                        ColorizeAnimatedTextKit(
+                          text: [
+                            "Hi, This feature is coming soon",
+                          ],
+                          isRepeatingAnimation: false,
+                          textStyle: TextStyle(
+                              fontSize: 12.0,
+                              fontFamily: "Horizon"
+                          ),
+                          colors: [
+                            Colors.white,
+                            primaryRed,
+                            Colors.white,
+                          ],
+                          textAlign: TextAlign.start,
+                        ),
+                        AnimatedBuilder(
+                          animation: _colorTween,
+                          builder: (context, child) =>
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 100.0, right: 100.0),
+                                child: FlatButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  height: 35.0,
+                                  minWidth: double.infinity,
+                                  color: Colors.transparent,
+                                  shape: RoundedRectangleBorder(
+                                    side: BorderSide(
+                                        color: _colorTween.value, width: 2.0),
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                  child: Text("OK", style: TextStyle(
+                                      fontSize: 15.0, color: Colors.white),),
+                                ),
+                              ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 20.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Tapables(
+                                text: "Contact Us", ontap: null, color: Colors
+                                  .white, size: 12.0,),
+                              SizedBox(width: 20.0,),
+                              Tapables(
+                                text: "Unsubscribe", ontap: null, color: Colors
+                                  .white, size: 12.0,),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -301,6 +618,7 @@ class SendMoneyMoreItems extends StatelessWidget {
               width: 35.0,
               containerColor: Color(0xFF707070),
               iconColor: Colors.white,
+              onpressed: () =>  Navigator.pushNamed(context, SendMoneyScreen.id),
             ),
           ),
           Padding(
@@ -318,6 +636,8 @@ class SendMoneyMoreItems extends StatelessWidget {
               width: 35.0,
               containerColor: Color(0xFF707070),
               iconColor: Colors.white,
+              onpressed: () =>  openComingSoonDialogue
+                (context),
             ),
           ),
           Padding(
@@ -335,6 +655,8 @@ class SendMoneyMoreItems extends StatelessWidget {
               width: 35.0,
               containerColor: Color(0xFF707070),
               iconColor: Colors.white,
+              onpressed: () =>  openComingSoonDialogue
+                (context),
             ),
           ),
           Padding(
@@ -352,6 +674,8 @@ class SendMoneyMoreItems extends StatelessWidget {
               width: 35.0,
               containerColor: Color(0xFF707070),
               iconColor: Colors.white,
+              onpressed: () =>  openComingSoonDialogue
+                (context),
             ),
           ),
           Padding(
@@ -369,6 +693,7 @@ class SendMoneyMoreItems extends StatelessWidget {
               width: 35.0,
               containerColor: Color(0xFF707070),
               iconColor: Colors.white,
+              onpressed: () =>  Navigator.pushNamed(context, TransactionHistory.id),
             ),
           ),
           Padding(
@@ -382,10 +707,160 @@ class SendMoneyMoreItems extends StatelessWidget {
 }
 
 
-class PaymentsMoreItems extends StatelessWidget {
+class PaymentsMoreItems extends StatefulWidget {
   const PaymentsMoreItems({
     Key key,
   }) : super(key: key);
+
+  @override
+  _PaymentsMoreItemsState createState() => _PaymentsMoreItemsState();
+}
+
+class _PaymentsMoreItemsState extends State<PaymentsMoreItems> with TickerProviderStateMixin {
+
+  AnimationController _animationController;
+  Animation _colorTween;
+
+  void openComingSoonDialogue(BuildContext context) {
+    _animationController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 5000));
+    _colorTween = ColorTween(begin: primaryRedDark, end: Colors.white)
+        .animate(_animationController);
+    _animationController.forward();
+    showDialog(
+      context: context,
+      builder: (context) =>
+          Theme(
+            data: Theme.of(context).copyWith(
+                primaryColor: primaryRedLight),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  margin: EdgeInsets.only(left: 30.0, right: 30.0),
+                  elevation: 10.0,
+                  semanticContainer: true,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: primaryRedDark,
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    height: 250.0,
+                    width: double.infinity,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                iconButton(
+                                  function: null, icon: Icons.more_vert,
+                                  size: 20.0,
+                                  color: Colors.white,
+                                ),
+                                iconButton(function: null, icon: Icons.share,
+                                  size: 20.0,
+                                  color: Colors.white,
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                iconButton(function: null, icon: Icons.close,
+                                  size: 20.0,
+                                  color: primaryRedLight,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        TextLiquidFill(
+                          text: 'COMING SOON',
+                          boxBackgroundColor: primaryRedDark,
+                          waveColor: Colors.white,
+                          textStyle: TextStyle(
+                            fontSize: 40.0,
+                            fontFamily: "Horizon",
+                          ),
+                          boxHeight: 40.0,
+                          boxWidth: 280.0,
+                        ),
+                        ColorizeAnimatedTextKit(
+                          text: [
+                            "Hi, This feature is coming soon",
+                          ],
+                          isRepeatingAnimation: false,
+                          textStyle: TextStyle(
+                              fontSize: 12.0,
+                              fontFamily: "Horizon"
+                          ),
+                          colors: [
+                            Colors.white,
+                            primaryRed,
+                            Colors.white,
+                          ],
+                          textAlign: TextAlign.start,
+                        ),
+                        AnimatedBuilder(
+                          animation: _colorTween,
+                          builder: (context, child) =>
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 100.0, right: 100.0),
+                                child: FlatButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  height: 35.0,
+                                  minWidth: double.infinity,
+                                  color: Colors.transparent,
+                                  shape: RoundedRectangleBorder(
+                                    side: BorderSide(
+                                        color: _colorTween.value, width: 2.0),
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                  child: Text("OK", style: TextStyle(
+                                      fontSize: 15.0, color: Colors.white),),
+                                ),
+                              ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 20.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Tapables(
+                                text: "Contact Us", ontap: null, color: Colors
+                                  .white, size: 12.0,),
+                              SizedBox(width: 20.0,),
+                              Tapables(
+                                text: "Unsubscribe", ontap: null, color: Colors
+                                  .white, size: 12.0,),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -406,6 +881,8 @@ class PaymentsMoreItems extends StatelessWidget {
               width: 35.0,
               containerColor: Color(0xFF707070),
               iconColor: Colors.white,
+              onpressed: () =>  openComingSoonDialogue
+                (context),
             ),
           ),
           Padding(
@@ -423,6 +900,8 @@ class PaymentsMoreItems extends StatelessWidget {
               width: 35.0,
               containerColor: Color(0xFF707070),
               iconColor: Colors.white,
+              onpressed: () =>  openComingSoonDialogue
+                (context),
             ),
           ),
           Padding(
@@ -440,6 +919,8 @@ class PaymentsMoreItems extends StatelessWidget {
               width: 35.0,
               containerColor: Color(0xFF707070),
               iconColor: Colors.white,
+              onpressed: () =>  openComingSoonDialogue
+                (context),
             ),
           ),
           Padding(
@@ -457,6 +938,8 @@ class PaymentsMoreItems extends StatelessWidget {
               width: 35.0,
               containerColor: Color(0xFF707070),
               iconColor: Colors.white,
+              onpressed: () =>  openComingSoonDialogue
+                (context),
             ),
           ),
           Padding(
@@ -470,10 +953,160 @@ class PaymentsMoreItems extends StatelessWidget {
 }
 
 
-class LoansMoreItems extends StatelessWidget {
+class LoansMoreItems extends StatefulWidget {
   const LoansMoreItems({
     Key key,
   }) : super(key: key);
+
+  @override
+  _LoansMoreItemsState createState() => _LoansMoreItemsState();
+}
+
+class _LoansMoreItemsState extends State<LoansMoreItems> with TickerProviderStateMixin{
+
+  AnimationController _animationController;
+  Animation _colorTween;
+
+  void openComingSoonDialogue(BuildContext context) {
+    _animationController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 5000));
+    _colorTween = ColorTween(begin: primaryRedDark, end: Colors.white)
+        .animate(_animationController);
+    _animationController.forward();
+    showDialog(
+      context: context,
+      builder: (context) =>
+          Theme(
+            data: Theme.of(context).copyWith(
+                primaryColor: primaryRedLight),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  margin: EdgeInsets.only(left: 30.0, right: 30.0),
+                  elevation: 10.0,
+                  semanticContainer: true,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: primaryRedDark,
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    height: 250.0,
+                    width: double.infinity,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                iconButton(
+                                  function: null, icon: Icons.more_vert,
+                                  size: 20.0,
+                                  color: Colors.white,
+                                ),
+                                iconButton(function: null, icon: Icons.share,
+                                  size: 20.0,
+                                  color: Colors.white,
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                iconButton(function: null, icon: Icons.close,
+                                  size: 20.0,
+                                  color: primaryRedLight,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        TextLiquidFill(
+                          text: 'COMING SOON',
+                          boxBackgroundColor: primaryRedDark,
+                          waveColor: Colors.white,
+                          textStyle: TextStyle(
+                            fontSize: 40.0,
+                            fontFamily: "Horizon",
+                          ),
+                          boxHeight: 40.0,
+                          boxWidth: 280.0,
+                        ),
+                        ColorizeAnimatedTextKit(
+                          text: [
+                            "Hi, This feature is coming soon",
+                          ],
+                          isRepeatingAnimation: false,
+                          textStyle: TextStyle(
+                              fontSize: 12.0,
+                              fontFamily: "Horizon"
+                          ),
+                          colors: [
+                            Colors.white,
+                            primaryRed,
+                            Colors.white,
+                          ],
+                          textAlign: TextAlign.start,
+                        ),
+                        AnimatedBuilder(
+                          animation: _colorTween,
+                          builder: (context, child) =>
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 100.0, right: 100.0),
+                                child: FlatButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  height: 35.0,
+                                  minWidth: double.infinity,
+                                  color: Colors.transparent,
+                                  shape: RoundedRectangleBorder(
+                                    side: BorderSide(
+                                        color: _colorTween.value, width: 2.0),
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                  child: Text("OK", style: TextStyle(
+                                      fontSize: 15.0, color: Colors.white),),
+                                ),
+                              ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 20.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Tapables(
+                                text: "Contact Us", ontap: null, color: Colors
+                                  .white, size: 12.0,),
+                              SizedBox(width: 20.0,),
+                              Tapables(
+                                text: "Unsubscribe", ontap: null, color: Colors
+                                  .white, size: 12.0,),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -495,6 +1128,8 @@ class LoansMoreItems extends StatelessWidget {
               width: 35.0,
               containerColor: Color(0xFF707070),
               iconColor: Colors.white,
+              onpressed: () =>  openComingSoonDialogue
+                (context),
             ),
           ),
           Padding(
@@ -512,6 +1147,8 @@ class LoansMoreItems extends StatelessWidget {
               width: 35.0,
               containerColor: Color(0xFF707070),
               iconColor: Colors.white,
+              onpressed: () =>  openComingSoonDialogue
+                (context),
             ),
           ),
           Padding(
@@ -524,10 +1161,160 @@ class LoansMoreItems extends StatelessWidget {
   }
 }
 
-class OthersMoreItems extends StatelessWidget {
+class OthersMoreItems extends StatefulWidget {
   const OthersMoreItems({
     Key key,
   }) : super(key: key);
+
+  @override
+  _OthersMoreItemsState createState() => _OthersMoreItemsState();
+}
+
+class _OthersMoreItemsState extends State<OthersMoreItems> with TickerProviderStateMixin {
+
+  AnimationController _animationController;
+  Animation _colorTween;
+
+  void openComingSoonDialogue(BuildContext context) {
+    _animationController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 5000));
+    _colorTween = ColorTween(begin: primaryRedDark, end: Colors.white)
+        .animate(_animationController);
+    _animationController.forward();
+    showDialog(
+      context: context,
+      builder: (context) =>
+          Theme(
+            data: Theme.of(context).copyWith(
+                primaryColor: primaryRedLight),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
+                  margin: EdgeInsets.only(left: 30.0, right: 30.0),
+                  elevation: 10.0,
+                  semanticContainer: true,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: primaryRedDark,
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    height: 250.0,
+                    width: double.infinity,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                iconButton(
+                                  function: null, icon: Icons.more_vert,
+                                  size: 20.0,
+                                  color: Colors.white,
+                                ),
+                                iconButton(function: null, icon: Icons.share,
+                                  size: 20.0,
+                                  color: Colors.white,
+                                ),
+                              ],
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              children: [
+                                iconButton(function: null, icon: Icons.close,
+                                  size: 20.0,
+                                  color: primaryRedLight,
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                        TextLiquidFill(
+                          text: 'COMING SOON',
+                          boxBackgroundColor: primaryRedDark,
+                          waveColor: Colors.white,
+                          textStyle: TextStyle(
+                            fontSize: 40.0,
+                            fontFamily: "Horizon",
+                          ),
+                          boxHeight: 40.0,
+                          boxWidth: 280.0,
+                        ),
+                        ColorizeAnimatedTextKit(
+                          text: [
+                            "Hi, This feature is coming soon",
+                          ],
+                          isRepeatingAnimation: false,
+                          textStyle: TextStyle(
+                              fontSize: 12.0,
+                              fontFamily: "Horizon"
+                          ),
+                          colors: [
+                            Colors.white,
+                            primaryRed,
+                            Colors.white,
+                          ],
+                          textAlign: TextAlign.start,
+                        ),
+                        AnimatedBuilder(
+                          animation: _colorTween,
+                          builder: (context, child) =>
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 100.0, right: 100.0),
+                                child: FlatButton(
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  height: 35.0,
+                                  minWidth: double.infinity,
+                                  color: Colors.transparent,
+                                  shape: RoundedRectangleBorder(
+                                    side: BorderSide(
+                                        color: _colorTween.value, width: 2.0),
+                                    borderRadius: BorderRadius.circular(20.0),
+                                  ),
+                                  child: Text("OK", style: TextStyle(
+                                      fontSize: 15.0, color: Colors.white),),
+                                ),
+                              ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 20.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Tapables(
+                                text: "Contact Us", ontap: null, color: Colors
+                                  .white, size: 12.0,),
+                              SizedBox(width: 20.0,),
+                              Tapables(
+                                text: "Unsubscribe", ontap: null, color: Colors
+                                  .white, size: 12.0,),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -549,6 +1336,7 @@ class OthersMoreItems extends StatelessWidget {
               width: 35.0,
               containerColor: Color(0xFF707070),
               iconColor: Colors.white,
+              onpressed: () =>  Navigator.pushNamed(context, TransactionHistory.id),
             ),
           ),
           Padding(
@@ -566,6 +1354,8 @@ class OthersMoreItems extends StatelessWidget {
               width: 35.0,
               containerColor: Color(0xFF707070),
               iconColor: Colors.white,
+              onpressed: () =>  openComingSoonDialogue
+                (context),
             ),
           ),
           Padding(
@@ -583,6 +1373,8 @@ class OthersMoreItems extends StatelessWidget {
               width: 35.0,
               containerColor: Color(0xFF707070),
               iconColor: Colors.white,
+              onpressed: () =>  openComingSoonDialogue
+                (context),
             ),
           ),
           Padding(
@@ -600,6 +1392,8 @@ class OthersMoreItems extends StatelessWidget {
               width: 35.0,
               containerColor: Color(0xFF707070),
               iconColor: Colors.white,
+              onpressed: () =>  openComingSoonDialogue
+                (context),
             ),
           ),
           Padding(
@@ -617,6 +1411,8 @@ class OthersMoreItems extends StatelessWidget {
               width: 35.0,
               containerColor: Color(0xFF707070),
               iconColor: Colors.white,
+              onpressed: () =>  openComingSoonDialogue
+                (context),
             ),
           ),
           Padding(
@@ -634,6 +1430,8 @@ class OthersMoreItems extends StatelessWidget {
               width: 35.0,
               containerColor: Color(0xFF707070),
               iconColor: Colors.white,
+              onpressed: () =>  openComingSoonDialogue
+                (context),
             ),
           ),
           Padding(
@@ -651,6 +1449,8 @@ class OthersMoreItems extends StatelessWidget {
               width: 35.0,
               containerColor: Color(0xFF707070),
               iconColor: Colors.white,
+              onpressed: () =>  openComingSoonDialogue
+                (context),
             ),
           ),
           Padding(
@@ -668,6 +1468,8 @@ class OthersMoreItems extends StatelessWidget {
               width: 35.0,
               containerColor: Color(0xFF707070),
               iconColor: Colors.white,
+              onpressed: () =>  openComingSoonDialogue
+                (context),
             ),
           ),
           Padding(
@@ -685,6 +1487,8 @@ class OthersMoreItems extends StatelessWidget {
               width: 35.0,
               containerColor: Color(0xFF707070),
               iconColor: Colors.white,
+              onpressed: () =>  openComingSoonDialogue
+                (context),
             ),
           ),
           Padding(
@@ -702,6 +1506,8 @@ class OthersMoreItems extends StatelessWidget {
               width: 35.0,
               containerColor: Color(0xFF707070),
               iconColor: Colors.white,
+              onpressed: () =>  openComingSoonDialogue
+                (context),
             ),
           ),
           Padding(
@@ -719,6 +1525,8 @@ class OthersMoreItems extends StatelessWidget {
               width: 35.0,
               containerColor: Color(0xFF707070),
               iconColor: Colors.white,
+              onpressed: () =>  openComingSoonDialogue
+                (context),
             ),
           ),
           Padding(

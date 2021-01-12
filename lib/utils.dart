@@ -1,10 +1,10 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cub_mobile/country_data.dart';
+import 'package:cub_mobile/message_screen.dart';
 import 'package:cub_mobile/profile_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:form_validation/form_validation.dart';
+import 'dart:io';
 import 'package:provider/provider.dart' hide BuildContext;
 import 'main.dart';
 
@@ -103,7 +103,7 @@ class RoundedRect extends StatelessWidget {
           borderRadius: BorderRadius.circular(30.0),
           border: Border.all(
             color: color,
-            width: 2.0,
+            width: 1.2,
             style: BorderStyle.solid,
           ),
         ),
@@ -731,17 +731,14 @@ void openMessageDialogue(BuildContext context, Widget widget) =>
     showDialog(
       context: context,
       builder: (context) =>
-          Container(
-            color: Colors.white.withOpacity(0.70),
-            child: Theme(
-              data: Theme.of(context).copyWith(
-                  primaryColor: primaryRedDark),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  widget,
-                ],
-              ),
+          Theme(
+            data: Theme.of(context).copyWith(
+                primaryColor: primaryRedDark),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                widget,
+              ],
             ),
           ),
     );
@@ -796,6 +793,9 @@ class SignUpMessage extends StatelessWidget {
                       height: 50.0,
                       minWidth: 300.0,
                       color: color,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25.0),
+                      ),
                       onPressed: () => Navigator.pop(context),
                       child: Text(
                         "OK",
@@ -828,3 +828,47 @@ class SignUpMessage extends StatelessWidget {
     );
   }
 }
+
+Future<bool> checkInternetConnectivity( BuildContext context) async {
+  try {
+    final result = await InternetAddress.lookup('google.com');
+    if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
+      print('connected');
+      return true;
+
+    }
+  } on SocketException catch (_) {
+    openMessageDialogue(context, SignUpMessage(text: "Ooops. No Internet Access.\n try again later", color: primaryRed, icon: Icons.close, text2: "Failed",),
+    );
+    return false;
+  }
+}
+
+class FloatingActionButt extends StatelessWidget {
+  const FloatingActionButt({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12.0, right: 5.0),
+      child: Container(
+          height: 48.0,
+          width: 48.0,
+          decoration: BoxDecoration(
+            color: primaryRed,
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(30.0),
+                bottomLeft: Radius.circular(30.0),
+                bottomRight: Radius.circular(30.0)),
+          ),
+          child: iconButton(
+            function: () => Navigator.pushNamed(context, MessageScreen.id),
+            icon: Icons.message,
+            color: Colors.white,
+          )),
+    );
+  }
+}
+

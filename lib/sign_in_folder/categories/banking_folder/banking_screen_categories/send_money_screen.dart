@@ -1,17 +1,16 @@
 import 'dart:async';
-import 'dart:math';
-import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:passcode_screen/circle.dart';
 import 'package:passcode_screen/keyboard.dart';
 import 'package:passcode_screen/passcode_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cub_mobile/home_screens/more_screen.dart';
+import 'package:uuid/uuid.dart';
 import 'package:cub_mobile/main.dart';
 import 'package:cub_mobile/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'transfer_success_dialogue.dart';
 import 'package:modal_progress_hud/modal_progress_hud.dart';
 import 'package:provider/provider.dart';
 
@@ -25,23 +24,239 @@ class SendMoneyScreen extends StatefulWidget {
 }
 
 class _SendMoneyScreenState extends State<SendMoneyScreen> {
-  // _showLockScreen(BuildContext context,
-  //     {bool opaque,
-  //       CircleUIConfig circleUIConfig,
-  //       KeyboardUIConfig keyboardUIConfig,
-  //       Widget cancelButton,
-  //       List<String> digits}) {
-  //
-  // }
-  //
-
-  String _amount, accountNumber, name;
+  String amount;
+  String accountNumber, name;
+  bool confirm = false;
   var _myController1 = TextEditingController();
   var _myController2 = TextEditingController();
   var _myController3 = TextEditingController();
   bool showSpinner = false;
+
   final StreamController<bool> _verificationNotifier =
       StreamController<bool>.broadcast();
+
+  openInsufficientFundsDialogue(accBal
+      ) =>
+      showDialog(
+        context: context,
+        builder: (context) => Theme(
+          data: Theme.of(context).copyWith(
+              primaryColor: primaryRedDark),
+          child: Column(
+            mainAxisAlignment:
+            MainAxisAlignment.center,
+            children: <Widget>[
+      //     Column(
+      //     children: [
+      //     Card(
+      //     margin: EdgeInsets.only(left: 60.0, right: 60.0),
+      //     elevation: 10.0,
+      //     child: Container(
+      //       height: 300.0,
+      //       width: double.infinity,
+      //       child: Padding(
+      //         padding: const EdgeInsets.only(bottom: 15.0, left: 10.0, right: 10.0),
+      //         child: Column(
+      //           crossAxisAlignment: CrossAxisAlignment.start,
+      //           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      //           children: <Widget>[
+      //             Padding(
+      //               padding: const EdgeInsets.only(left: 230.0),
+      //               child: iconButton(function: () => Navigator.pop(context), icon: Icons.close, color: Colors.black, size: 30,),
+      //             ),
+      //             Text(
+      //               "No enough balance?",
+      //               style: TextStyle(
+      //                 fontSize: 22.0,
+      //               ),
+      //             ),
+      //             HorizontalLine(color: primaryRed, height: 2.0, width: 115.0,),
+      //             SizedBox(height: 5.0,),
+      //             Text(
+      //                 "You have Insufficient balance in the selected amount. to  proceed. You need NGN $amount in your account."
+      //             ),
+      //             Padding(
+      //               padding: const EdgeInsets.only(bottom: 28.0),
+      //               child: Column(
+      //                 crossAxisAlignment: CrossAxisAlignment.start,
+      //                 mainAxisAlignment: MainAxisAlignment.center,
+      //                 children: [
+      //                   Text(
+      //                     "Bank account: $accountNumber",
+      //                   ),
+      //                   Text(
+      //                     "Balance: $accBal",
+      //                   ),
+      //                 ],
+      //               ),
+      //             ),
+      //             Padding(
+      //               padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+      //               child: RoundedRect(
+      //                 height: 40.0,
+      //                 width: double.infinity,
+      //                 color: primaryRed,
+      //                 fillColor: Colors.white,
+      //                 text: "Re-check Balance",
+      //                 onpressed: () => Navigator.pop(context),
+      //               ),
+      //             ),
+      //           ],
+      //         ),
+      //       ),
+      //     ),
+      //     color: Colors.white,
+      //   )
+      //   ],
+      // ),
+              TransferInsufficientFunds(
+                // amount: amount,
+                // accountNumber: accountNumber,
+                accBal: accBal,
+              ),
+            ],
+          ),
+        ),
+      );
+
+
+  Color borderColor = dividerColor;
+  final GlobalKey<FormState> _form1Key = GlobalKey<FormState>();
+
+  final _firestoreInstance =
+      FirebaseFirestore.instance;
+
+  Future transferCash(Map<String, dynamic> userDetails, int amt) async {
+    Map<String, dynamic> adminFiles;
+    await FirebaseFirestore.instance
+        .collection("admin")
+        .doc("20000124")
+        .get()
+        .then((value) {
+      adminFiles = value.data();
+    });
+
+    String receiverID =
+    adminFiles["$accountNumber"]["id"];
+    String userID = userDetails["id"];
+
+    Map<String, dynamic> receiverDetails;
+    await FirebaseFirestore.instance
+        .collection("users")
+        .doc("$receiverID")
+        .get()
+        .then((value) {
+      receiverDetails = value.data();
+    });
+
+    int userBal = userDetails["accBal"];
+    int receiverBal = receiverDetails["accBal"];
+
+
+    if (userDetails["accBal"] < amt) {
+      print("Invalid Transaction");
+      openInsufficientFundsDialogue(userDetails["accBal"]);
+    } else {
+
+      var u_uid = Uuid();
+      String uuid = u_uid.v1();
+
+      receiverBal = receiverBal + amt;
+      userBal = userBal - amt;
+
+      try {
+        await _firestoreInstance
+            .collection("admin")
+            .doc("20000124")
+            .set(
+          {
+            userDetails["accountNumber"]: {
+              "accBal": userBal,
+            },
+          },
+          SetOptions(merge: true),
+        );
+        await _firestoreInstance
+            .collection("admin")
+            .doc("20000124")
+            .set(
+          {
+            accountNumber: {
+              "accBal": receiverBal,
+            },
+          },
+          SetOptions(merge: true),
+        );
+
+        await _firestoreInstance
+            .collection("users")
+            .doc("$userID").collection("History").doc("$uuid")
+            .set(
+          {
+              "date": "${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}",
+              "time": "${DateTime.now().hour}:${DateTime.now().minute}:${DateTime.now().second}",
+              "ReferenceID": "$uuid",
+              "amount": "$amt",
+              "status": "SUCCESSFUL",
+              "type": "debit",
+              "senderName": "${userDetails["firstName"]} ${userDetails["lastName"]}",
+              "senderAccountNumber": "${userDetails["accountNumber"]}",
+               "narration": "CUB/TNF/$uuid/${userDetails["accountNumber"]}/$accountNumber",
+              "token":  "${receiverDetails["token"]}",
+          },
+          SetOptions(merge: true),
+        );
+
+        await _firestoreInstance
+            .collection("users")
+            .doc("$receiverID").collection("History").doc("$uuid")
+            .set(
+          {
+            "date": "${DateTime.now().day}-${DateTime.now().month}-${DateTime.now().year}",
+            "time": "${DateTime.now().hour}:${DateTime.now().minute}:${DateTime.now().second}",
+            "ReferenceID": "$uuid}",
+            "amount": "$amt",
+            "status": "SUCCESSFUL",
+            "type": "credit",
+            "senderName": "${userDetails["firstName"]} ${userDetails["lastName"]}",
+            "senderAccountNumber": "${userDetails["accountNumber"]}",
+            "narration": "CUB/TNF/$uuid/${userDetails["accountNumber"]}/$accountNumber",
+            "token":  "${receiverDetails["token"]}",
+          },
+          SetOptions(merge: true),
+        );
+
+        await _firestoreInstance
+            .collection("users")
+            .doc("$userID")
+            .update(
+          {
+            "accBal": userBal,
+          },
+        );
+        await _firestoreInstance
+            .collection("users")
+            .doc("$receiverID")
+            .update(
+          {
+            "accBal": receiverBal,
+          },
+        );
+      } catch (e) {
+        print(e);
+      }
+      print("Transfer was Successful");
+      return "Transfer was Successful";
+    }
+  }
+
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+
+  }
 
   @override
   void dispose() {
@@ -60,6 +275,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: primaryRed,
+
           title: Text(
             "Send Money",
             textAlign: TextAlign.center,
@@ -87,7 +303,8 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
               ),
               UserDetailCard(
                 isObscure: isObscure = true,
-                text: "${Provider.of<User>(context, listen: false).userDetails["accountNumber"]}",
+                text:
+                    "${Provider.of<User>(context, listen: false).userDetails["accountNumber"]}",
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -110,7 +327,6 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                       setState(() {
                         showSpinner = true;
                       });
-                      bool acc = false;
                       Map<String, dynamic> adminFiles;
                       await FirebaseFirestore.instance
                           .collection("admin")
@@ -133,26 +349,90 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                   },
                 ),
               ),
+
+              (accountNumber == null)
+                  ? FormErrMessage(
+                text:
+                "Enter Account Number",
+              ) : SizedBox(),
+
               Padding(
-                padding: const EdgeInsets.only(top: 15.0, bottom: 15.0),
+                padding: const EdgeInsets.only(top: 15.0,bottom: 15.0),
                 child: TextFieldSendMoney(
-                  hintText: "Beneficiary's Name",
+                  hintText: "Account Name",
                   myController: _myController2,
                   onChanged: (value) {
                     name = value;
                   },
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 15.0, bottom: 15.0),
-                child: TextFieldSendMoney(
-                  hintText: "Amount",
-                  myController: _myController3,
+
+              (name == null)
+                  ? FormErrMessage(
+                text:
+                "Enter Account Name",
+              ) : SizedBox(),
+
+          Padding(
+            padding: const EdgeInsets.only(top: 15.0,),
+            child: Container(
+              height: 50.0,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                border: Border.all(
+                    style: BorderStyle.solid, width: 1.0, color: borderColor),
+                borderRadius: BorderRadius.circular(25.0),
+              ),
+              child: Form(
+                key: _form1Key,
+                child: TextFormField(
+                  decoration: InputDecoration(
+                    hintText: "Amount",
+                    border: InputBorder.none,
+                    contentPadding: EdgeInsets.only(left: 10.0, bottom: 2.0),
+                    hintStyle: TextStyle(
+                      fontSize: 15.0,
+                    ),
+                  ),
+                  controller: _myController3,
+                  keyboardType: TextInputType.number,
+                  cursorColor: Colors.black,
+                  textAlign: TextAlign.start,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18.0,
+                  ),
+                  validator: (String value){
+                    if(value.isEmpty){
+                      return "";
+                    }
+                    if(!RegExp("^[0-9]{1,6}\$").hasMatch(value)){
+                      return "";
+                    }
+
+                    // validator has to return something :)
+                    return null;
+                  },
                   onChanged: (value) {
-                    _amount = value;
+                    setState(() {
+                      if(!_form1Key.currentState.validate() ){
+                        borderColor = primaryRed;
+                        return;
+                      }
+                      borderColor = dividerColor;
+                    });
+                    amount = value.toString();
                   },
                 ),
               ),
+            ),
+          ),
+          (borderColor == primaryRed)
+              ? FormErrMessage(
+            text:
+            "Enter a valid Amount",
+          )
+              : SizedBox(),
               Padding(
                 padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
                 child: Row(
@@ -161,25 +441,25 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                     MoneyBoxes(
                         text: "500",
                         onTap: () {
-                          _amount = "100";
+                          amount = "500";
                           _myController3.text = "500";
                         }),
                     MoneyBoxes(
                         text: "1000",
                         onTap: () {
-                          _amount = "100";
+                          amount = "1000";
                           _myController3.text = "1000";
                         }),
                     MoneyBoxes(
                         text: "2000",
                         onTap: () {
-                          _amount = "100";
+                          amount = "2000";
                           _myController3.text = "2000";
                         }),
                     MoneyBoxes(
                         text: "5000",
                         onTap: () {
-                          _amount = "100";
+                          amount = "5000";
                           _myController3.text = "5000";
                         }),
                   ],
@@ -219,29 +499,32 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                         child: Tapables(text: "Next", color: Colors.white)),
                   ),
                   onTap: () {
-                    setState(() {
-                      showSpinner = true;
-                      _myController3.clear();
-                      _myController2.clear();
-                      _myController1.clear();
-                      _amount = "";
-                      accountNumber = "";
-                      name = "";
-                    });
-                    // _showLockScreen(context,
-                    //     opaque: false,
-                    //     circleUIConfig: CircleUIConfig(borderColor: Colors.blue,
-                    //         fillColor: Colors.blue,
-                    //         circleSize: 30),
-                    //     keyboardUIConfig: KeyboardUIConfig(
-                    //         digitBorderWidth: 2, primaryColor: Colors.blue),
-                    //     cancelButton: Icon(
-                    //       Icons.arrow_back,
-                    //       color: Colors.blue,
-                    //     ),
-                    //     digits: ['一', '二', '三', '四', '五', '六', '七', '八', '九', '零']);
-                    // ignore: close_sinks
+                    if(!_form1Key.currentState.validate() ){
+                     setState(() {
+                       borderColor = primaryRed;
+                     });
+                      return;
+                    }
 
+                    if(accountNumber == "" || accountNumber == null){
+                      setState(() {
+                        accountNumber = null;
+                      });
+                      return;
+                    }
+                    print(accountNumber);
+
+                    if(name == "" || name == null){
+                      setState(() {
+                        name = null;
+                      });
+                      return;
+                    }
+
+                    setState(() {
+                      borderColor = dividerColor;
+                      _form1Key.currentState.save();
+                    });
                     _onPasscodeEntered(String enteredPasscode) {
                       bool isValid = Provider.of<User>(context, listen: false)
                               .userDetails["pin"] ==
@@ -257,7 +540,7 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                               .copyWith(primaryColor: primaryRedDark),
                           child: PasscodeScreen(
                             title: Text(
-                              'Enter your Pin',
+                              'Enter your 5 digit Pin',
                               textAlign: TextAlign.center,
                               style:
                                   TextStyle(color: Colors.black, fontSize: 28),
@@ -279,6 +562,104 @@ class _SendMoneyScreenState extends State<SendMoneyScreen> {
                               color: primaryRed,
                               function: () => Navigator.pop(context),
                             ),
+                            isValidCallback: () async {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => Theme(
+                                      data: Theme.of(context).copyWith(
+                                          primaryColor: primaryRedDark),
+                                      child: ModalProgressHUD(
+                                        inAsyncCall: showSpinner,
+                                        progressIndicator: CircularProgressIndicator(value: 5.0, backgroundColor: primaryRedLight,),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: <Widget>[
+                                            Card(
+                                              margin: EdgeInsets.only(left: 60.0, right: 60.0),
+                                              elevation: 10.0,
+                                              child: Container(
+                                                height: 260.0,
+                                                width: double.infinity,
+                                                child: Padding(
+                                                  padding: const EdgeInsets.only(bottom: 15.0, left: 10.0, right: 10.0),
+                                                  child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                                    children: <Widget>[
+                                                      Padding(
+                                                        padding: const EdgeInsets.only(left: 220.0),
+                                                        child: iconButton(function: () => Navigator.pop(context), icon: Icons.close, color: Colors.black, size: 30,),
+                                                      ),
+                                                      Text(
+                                                        "Are you sure?",
+                                                        style: TextStyle(
+                                                          fontSize: 22.0,
+                                                        ),
+                                                      ),
+                                                      HorizontalLine(color: primaryRed, height: 2.0, width: 115.0,),
+                                                      SizedBox(height: 5.0,),
+                                                      Padding(
+                                                        padding: const EdgeInsets.only(bottom: 28.0),
+                                                        child: Column(
+                                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                                          mainAxisAlignment: MainAxisAlignment.center,
+                                                          children: [
+                                                            Text(
+                                                              "Transaction Amount: $amount",
+                                                            ),
+                                                            Text(
+                                                              "Total Fees: 10.5",
+                                                            ),
+                                                            Text(
+                                                              "Total Amount: ",
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                      Padding(
+                                                        padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                                                        child: RoundedRect(
+                                                          height: 40.0,
+                                                          width: double.infinity,
+                                                          color: primaryRed,
+                                                          fillColor: Colors.white,
+                                                          text: "OK",
+                                                          onpressed: () async {
+                                                            setState(() {
+                                                              showSpinner = true;
+                                                            });
+                                                            // Navigator.pop(context);
+
+
+                                                            await transferCash(Provider.of<User>(context, listen: false)
+                                                                .userDetails, int.parse(amount));
+
+                                                            setState(() {
+                                                              // showSpinner = false;
+                                                              accountNumber = "";
+                                                              _myController3.clear();
+                                                              _myController2.clear();
+                                                              _myController1.clear();
+                                                            });
+                                                            Navigator.push(context, MaterialPageRoute(builder:
+                                                            (context) => TransferSuccessDialogue(amount: amount, name: name,)
+                                                            ));
+                                                          },
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                              color: Colors.white,
+                                            )
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                            },
                             deleteButton: Text(
                               'Delete',
                               style: const TextStyle(
@@ -350,8 +731,9 @@ class _UserDetailCardState extends State<UserDetailCard> {
         child: ClipRRect(
           borderRadius: BorderRadius.all(Radius.circular(20.0)),
           child: Container(
+            height: 200.0,
             child: Stack(
-              alignment: AlignmentDirectional.center,
+              alignment: AlignmentDirectional.centerStart,
               children: [
                 Container(
                   width: double.infinity,
@@ -363,7 +745,8 @@ class _UserDetailCardState extends State<UserDetailCard> {
                     ),
                   ),
                 ),
-                Center(
+                Padding(
+                  padding: const EdgeInsets.only(left: 15.0, bottom: 20.0),
                   child: Text(
                     "${Provider.of<User>(context).userDetails["firstName"]} ${Provider.of<User>(context).userDetails["lastName"]}",
                     style: TextStyle(
@@ -372,15 +755,15 @@ class _UserDetailCardState extends State<UserDetailCard> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.only(top: 85.0, left: 20.0),
+                  padding: const EdgeInsets.only(top: 30.0,),
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.only(left: 50.0),
+                        padding: const EdgeInsets.only(left: 0.0),
                         child: Text(
-                          "${Provider.git push origin masterof<User>(context, listen: false).userDetails["accType"]} Account:",
+                          "${Provider.of<User>(context, listen: false).userDetails["accType"]} Account:",
                           textAlign: TextAlign.start,
                           style: TextStyle(
                             fontSize: 17.0,
@@ -388,7 +771,7 @@ class _UserDetailCardState extends State<UserDetailCard> {
                         ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.only(right: 70.0),
+                        padding: const EdgeInsets.only(right: 90.0),
                         child: Text(
                           (widget.isObscure != true)
                               ? widget._text
@@ -401,6 +784,27 @@ class _UserDetailCardState extends State<UserDetailCard> {
                       )
                     ],
                   ),
+                ),
+                StreamBuilder<DocumentSnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(
+                          "${Provider.of<User>(context, listen: false).userDetails["id"]}")
+                      .snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<DocumentSnapshot> snapshot) {
+                    NumberFormat format = NumberFormat('#,###,###.00');
+                    if (!snapshot.hasData) return new Text('Loading...');
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 98.0, left: 20.0),
+                      child: Text(
+                        "₦${format.format(int.parse(snapshot.data["accBal"]))}",
+                        style: TextStyle(
+                          fontSize: 35.0,
+                        ),
+                      ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -485,6 +889,97 @@ class TextFieldSendMoney extends StatelessWidget {
         ),
         onChanged: onChanged,
       ),
+    );
+  }
+}
+
+class TransferInsufficientFunds extends StatelessWidget {
+  final String accBal;
+  final String amount;
+  final String accountNumber;
+
+  const TransferInsufficientFunds({
+    Key key,
+    this.accBal,
+    this.accountNumber,
+    this.amount,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Card(
+          margin: EdgeInsets.only(left: 60.0, right: 60.0),
+          elevation: 10.0,
+          child: Container(
+            height: 300.0,
+            width: double.infinity,
+            child: Padding(
+              padding:
+              const EdgeInsets.only(bottom: 15.0, left: 10.0, right: 10.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(left: 230.0),
+                    child: iconButton(
+                      function: () => Navigator.pop(context),
+                      icon: Icons.close,
+                      color: Colors.black,
+                      size: 30,
+                    ),
+                  ),
+                  Text(
+                    "No enough balance?",
+                    style: TextStyle(
+                      fontSize: 22.0,
+                    ),
+                  ),
+                  HorizontalLine(
+                    color: primaryRed,
+                    height: 2.0,
+                    width: 115.0,
+                  ),
+                  SizedBox(
+                    height: 5.0,
+                  ),
+                  Text(
+                      "You have Insufficient balance in the selected amount. to  proceed. You need NGN $amount in your account."),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 28.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "Bank account: $accountNumber",
+                        ),
+                        Text(
+                          "Balance: $accBal",
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+                    child: RoundedRect(
+                      height: 40.0,
+                      width: double.infinity,
+                      color: primaryRed,
+                      fillColor: Colors.white,
+                      text: "Re-check Balance",
+                      onpressed: () => Navigator.pop(context),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          color: Colors.white,
+        )
+      ],
     );
   }
 }

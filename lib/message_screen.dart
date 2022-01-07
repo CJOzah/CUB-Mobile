@@ -40,7 +40,7 @@ class MessageScreen extends StatelessWidget {
               child: iconButton(
                 icon: Icons.message,
                 size: 14.0,
-                color: primaryRed,
+                color: primaryRed, function: null,
               )),
             ),
                   Container(

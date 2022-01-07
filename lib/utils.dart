@@ -2,6 +2,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cub_mobile/country_data.dart';
 import 'package:cub_mobile/message_screen.dart';
 import 'package:cub_mobile/profile_screen.dart';
+import 'package:cub_mobile/size_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
@@ -9,7 +10,6 @@ import 'package:provider/provider.dart' hide BuildContext;
 import 'main.dart';
 
 class iconButton extends StatelessWidget {
-
   final Function function;
   final IconData icon;
   final double size;
@@ -17,54 +17,64 @@ class iconButton extends StatelessWidget {
 
   const iconButton({
     Key key,
-    @required this.function, @required this.icon, this.size, this.color,
+    @required this.function,
+    @required this.icon,
+    this.size,
+    this.color,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return IconButton(
-        icon: Icon(
-          icon,
-          color: color,
-          size: size,
-        ),
-        onPressed: function,
+      icon: Icon(
+        icon,
+        color: color,
+        size: size,
+      ),
+      onPressed: function,
     );
   }
 }
 
 class Tapables extends StatelessWidget {
-
   final String text;
   final Function ontap;
   final Color color;
   final double size;
 
-  const Tapables({
-    Key key, @required this.text, @required this.ontap, this.color, this.size
-  }) : super(key: key);
+  const Tapables(
+      {Key key,
+      @required this.text,
+      @required this.ontap,
+      this.color,
+      this.size})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      child: Text(text,
-      style: TextStyle(
-        color: color,
-        fontSize: size,
-      ),),
+      child: Text(
+        text,
+        style: TextStyle(
+          color: color,
+          fontSize: size,
+        ),
+      ),
       onTap: ontap,
     );
   }
 }
 
 class HorizontalLine extends StatelessWidget {
-
   final double width;
   final double height;
   final Color color;
 
   const HorizontalLine({
-    Key key, this.width, this.height, this.color,
+    Key key,
+    this.width,
+    this.height,
+    this.color,
   }) : super(key: key);
 
   @override
@@ -78,7 +88,6 @@ class HorizontalLine extends StatelessWidget {
 }
 
 class RoundedRect extends StatelessWidget {
-
   final Color color;
   final double height;
   final double width;
@@ -87,7 +96,13 @@ class RoundedRect extends StatelessWidget {
   final String text;
 
   const RoundedRect({
-    Key key, this.color, this.height, this.width, @required this.onpressed, this.fillColor, this.text,
+    Key key,
+    this.color,
+    this.height,
+    this.width,
+    @required this.onpressed,
+    this.fillColor,
+    this.text,
   }) : super(key: key);
 
   @override
@@ -110,19 +125,19 @@ class RoundedRect extends StatelessWidget {
         alignment: Alignment.center,
         width: width,
         height: height,
-        child: Text(text,
+        child: Text(
+          text,
           textAlign: TextAlign.center,
           style: TextStyle(
             color: color,
-          ),),
+          ),
+        ),
       ),
     );
   }
 }
 
-
 class RedRoundedRectButton extends StatelessWidget {
-
   final String text;
   final Function ontap;
   final double height;
@@ -130,7 +145,12 @@ class RedRoundedRectButton extends StatelessWidget {
   final EdgeInsetsGeometry padding;
 
   const RedRoundedRectButton({
-    Key key,@required this.text,@required this.ontap, this.height, this.width, this.padding,
+    Key key,
+    @required this.text,
+    @required this.ontap,
+    this.height,
+    this.width,
+    this.padding,
   }) : super(key: key);
 
   @override
@@ -142,11 +162,16 @@ class RedRoundedRectButton extends StatelessWidget {
           child: Container(
             height: height,
             width: width,
-            decoration:   BoxDecoration(
+            decoration: BoxDecoration(
               color: primaryRed,
               borderRadius: BorderRadius.circular(20.0),
             ),
-            child: Center(child: Tapables(text: text, color: Colors.white)),
+            child: Center(
+                child: Tapables(
+              text: text,
+              color: Colors.white,
+              ontap: null,
+            )),
           ),
           onTap: ontap,
         ),
@@ -155,9 +180,7 @@ class RedRoundedRectButton extends StatelessWidget {
   }
 }
 
-
 class RoundedTextField extends StatefulWidget {
-
   final Function onchanged;
   final bool password;
   Color borderColor = dividerColor;
@@ -167,7 +190,14 @@ class RoundedTextField extends StatefulWidget {
   final EdgeInsets padding;
 
   RoundedTextField({
-    Key key, @required this.onchanged, this.password, this.myController, this.borderColor, this.textInputType, this.text, this.padding,
+    Key key,
+    @required this.onchanged,
+    this.password,
+    this.myController,
+    this.borderColor,
+    this.textInputType,
+    this.text,
+    this.padding,
   }) : super(key: key);
 
   @override
@@ -175,7 +205,6 @@ class RoundedTextField extends StatefulWidget {
 }
 
 class _RoundedTextFieldState extends State<RoundedTextField> {
-
   final List<bool> obscuretext = [true, false];
 
   int index = 0;
@@ -184,6 +213,7 @@ class _RoundedTextFieldState extends State<RoundedTextField> {
   void dispose() {
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -201,15 +231,19 @@ class _RoundedTextFieldState extends State<RoundedTextField> {
         height: 45.0,
         child: TextField(
           controller: widget.myController,
-          obscureText:  (widget.password==true) ? obscuretext[index] : false,
+          obscureText: (widget.password == true) ? obscuretext[index] : false,
           decoration: InputDecoration(
             hintText: widget.text,
-            suffixIcon: (widget.password==true) ? iconButton(function: () {
-              setState(() {
-                index++;
-                if(index == 2) index = 0;
-              });
-            }, icon: Icons.remove_red_eye) : null,
+            suffixIcon: (widget.password == true)
+                ? iconButton(
+                    function: () {
+                      setState(() {
+                        index++;
+                        if (index == 2) index = 0;
+                      });
+                    },
+                    icon: Icons.remove_red_eye)
+                : null,
             border: InputBorder.none,
             contentPadding: widget.padding,
           ),
@@ -228,45 +262,54 @@ class _RoundedTextFieldState extends State<RoundedTextField> {
 
 // ignore: must_be_immutable
 class FormProgressIndicator extends StatelessWidget {
-
   final Color color1;
   final Color color2;
   List<bool> page = [false, false, false];
 
-  FormProgressIndicator({
-    Key key, @required this.page, this.color1, this.color2
-  }) : super(key: key);
+  FormProgressIndicator(
+      {Key key, @required this.page, this.color1, this.color2})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Row(
       // mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        RoundedNumber(text: "1", page: page[0],),
+        RoundedNumber(
+          text: "1",
+          page: page[0],
+        ),
         Container(
           height: 5.0,
           width: 125.0,
           color: color1,
         ),
-        RoundedNumber(text: "2", page: page[1],),
+        RoundedNumber(
+          text: "2",
+          page: page[1],
+        ),
         Container(
           height: 5.0,
           width: 125.0,
           color: color2,
         ),
-        RoundedNumber(text: "3", page: page[2],),
+        RoundedNumber(
+          text: "3",
+          page: page[2],
+        ),
       ],
     );
   }
 }
 
 class RoundedNumber extends StatelessWidget {
-
   final String text;
   final bool page;
 
   const RoundedNumber({
-    Key key, @required this.text, this.page,
+    Key key,
+    @required this.text,
+    this.page,
   }) : super(key: key);
 
   @override
@@ -275,22 +318,32 @@ class RoundedNumber extends StatelessWidget {
       height: 35.0,
       width: 35.0,
       decoration: BoxDecoration(
-        color: (page==true) ? primaryRed : dividerColor,
+        color: (page == true) ? primaryRed : dividerColor,
         borderRadius: BorderRadius.circular(20.0),
       ),
       child: Center(
-        child: Text(text, style: TextStyle(color: Colors.white),),
+        child: Text(
+          text,
+          style: TextStyle(color: Colors.white),
+        ),
       ),
     );
   }
 }
 
-
 class TextFieldWithCountryCode extends StatelessWidget {
   const TextFieldWithCountryCode({
     Key key,
-    @required TextEditingController controller, this.icon, this.iconFunction, this.iconColor, this.iconSize,@required this.onchanged, @required this.validate, this.textInputType,
-  }) : _controller = controller, super(key: key);
+    @required TextEditingController controller,
+    this.icon,
+    this.iconFunction,
+    this.iconColor,
+    this.iconSize,
+    @required this.onchanged,
+    @required this.validate,
+    this.textInputType,
+  })  : _controller = controller,
+        super(key: key);
 
   final TextEditingController _controller;
   final IconData icon;
@@ -306,8 +359,7 @@ class TextFieldWithCountryCode extends StatelessWidget {
     return Container(
       height: 40.0,
       child: Card(
-        margin:
-        EdgeInsets.only( top: 0),
+        margin: EdgeInsets.only(top: 0),
         elevation: 5,
         semanticContainer: true,
         clipBehavior: Clip.antiAliasWithSaveLayer,
@@ -321,15 +373,20 @@ class TextFieldWithCountryCode extends StatelessWidget {
               child: Container(
                 decoration: BoxDecoration(
                   color: primaryRed,
-                  borderRadius: BorderRadius.only(topLeft: Radius.circular(8.0), bottomLeft: Radius.circular(8.0)),
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(8.0),
+                      bottomLeft: Radius.circular(8.0)),
                 ),
                 alignment: Alignment.center,
                 width: double.infinity,
                 height: 40.0,
                 child: Tapables(
-                  text: "${Provider.of<CountryData>(context).getIso()} +${Provider.of<CountryData>(context).getPhoneCode()}",
+                  text:
+                      "${Provider.of<CountryData>(context).getIso()} +${Provider.of<CountryData>(context).getPhoneCode()}",
                   color: Colors.white,
-                  ontap: (){CountryData().openCountryPickerDialog(context);},
+                  ontap: () {
+                    CountryData().openCountryPickerDialog(context);
+                  },
                 ),
               ),
             ),
@@ -342,8 +399,13 @@ class TextFieldWithCountryCode extends StatelessWidget {
                 height: 40.0,
                 decoration: BoxDecoration(
                   color: Colors.white,
-                  border: Border.all(style: BorderStyle.solid, width: 0.5, color: dividerColor),
-                  borderRadius: BorderRadius.only(topRight: Radius.circular(5.0), bottomRight: Radius.circular(5.0)),
+                  border: Border.all(
+                      style: BorderStyle.solid,
+                      width: 0.5,
+                      color: dividerColor),
+                  borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(5.0),
+                      bottomRight: Radius.circular(5.0)),
                 ),
                 child: TextFormField(
                   controller: _controller,
@@ -351,7 +413,9 @@ class TextFieldWithCountryCode extends StatelessWidget {
                     border: InputBorder.none,
                     hintText: "Phone number",
                     contentPadding: EdgeInsets.only(top: 10.0),
-                    hintStyle: TextStyle(fontSize: 15.0,),
+                    hintStyle: TextStyle(
+                      fontSize: 15.0,
+                    ),
                     suffixIcon: iconButton(
                       icon: icon,
                       size: iconSize,
@@ -359,8 +423,7 @@ class TextFieldWithCountryCode extends StatelessWidget {
                       function: iconFunction,
                     ),
                   ),
-                  keyboardType:
-                  TextInputType.phone,
+                  keyboardType: TextInputType.phone,
                   cursorColor: Colors.black,
                   textAlign: TextAlign.start,
                   style: TextStyle(
@@ -379,10 +442,21 @@ class TextFieldWithCountryCode extends StatelessWidget {
   }
 }
 
-
 class RoundedRectTextField extends StatelessWidget {
   const RoundedRectTextField({
-    Key key,this.width,this.onchanged, this.hintText, this.withHint,@required this.height, this.borderColor, this.controller, this.onTap, this.textInputType, this.maxLength, this.validator, this.onSaved,
+    Key key,
+    this.width,
+    this.onchanged,
+    this.hintText,
+    this.withHint,
+    @required this.height,
+    this.borderColor,
+    this.controller,
+    this.onTap,
+    this.textInputType,
+    this.maxLength,
+    this.validator,
+    this.onSaved,
   }) : super(key: key);
 
   final double width;
@@ -409,7 +483,8 @@ class RoundedRectTextField extends StatelessWidget {
         height: height,
         width: width,
         decoration: BoxDecoration(
-          border: Border.all(style: BorderStyle.solid, width: 0.8, color: borderColor),
+          border: Border.all(
+              style: BorderStyle.solid, width: 0.8, color: borderColor),
           borderRadius: BorderRadius.circular(20.0),
         ),
         child: TextFormField(
@@ -420,12 +495,12 @@ class RoundedRectTextField extends StatelessWidget {
             hintText: hintText,
             hintStyle: TextStyle(color: dividerColor),
             border: InputBorder.none,
-            contentPadding: EdgeInsets.only(left: 8.0, right: 12.0, bottom: 2.0),
+            contentPadding:
+                EdgeInsets.only(left: 8.0, right: 12.0, bottom: 2.0),
           ),
-          keyboardType:
-          textInputType,
+          keyboardType: textInputType,
           cursorColor: Colors.black,
-          textAlign: (withHint==true) ? TextAlign.start : TextAlign.center,
+          textAlign: (withHint == true) ? TextAlign.start : TextAlign.center,
           style: TextStyle(
             color: Colors.black,
             fontSize: 18.0,
@@ -447,7 +522,7 @@ class Avatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap:  () => Navigator.pushNamed(context, ProfileScreen.id),
+      onTap: () => Navigator.pushNamed(context, ProfileScreen.id),
       child: Stack(
         alignment: Alignment.center,
         children: <Widget>[
@@ -477,8 +552,6 @@ class Avatar extends StatelessWidget {
   }
 }
 
-
-
 class RectButton extends StatelessWidget {
   final IconData icon;
   final Function ontap;
@@ -491,10 +564,11 @@ class RectButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     return InkWell(
       child: Container(
-        height: 40.0,
-        width: 60,
+        height: SizeConfig.sW * 10,
+        width: SizeConfig.sW * 12,
         decoration: BoxDecoration(
           border: Border.all(
             style: BorderStyle.solid,
@@ -530,7 +604,8 @@ class RoundedIcons extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20.0),
           color: Colors.white,
-          border: Border.all(style: BorderStyle.solid, width: 0.2, color: dividerColor),
+          border: Border.all(
+              style: BorderStyle.solid, width: 0.2, color: dividerColor),
           boxShadow: [
             BoxShadow(
               offset: Offset(0, 4),
@@ -620,33 +695,33 @@ class BuildSimCategoryItems extends StatelessWidget {
       children: <Widget>[
         Flexible(
             child: Padding(
-              padding: const EdgeInsets.only(left: 2.0, right: 2.0, bottom: 8.0),
-              child: Card(
-                elevation: 10.0,
-                child: Container(
-                  height: height,
-                  width: 340.0,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 15.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: simItems,
-                    ),
-                  ),
+          padding: const EdgeInsets.only(left: 2.0, right: 2.0, bottom: 8.0),
+          child: Card(
+            elevation: 10.0,
+            child: Container(
+              height: height,
+              width: 340.0,
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 15.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: simItems,
                 ),
-                color: Colors.white,
               ),
-            ))
+            ),
+            color: Colors.white,
+          ),
+        ))
       ],
     );
   }
 }
 
-
 class RoundedRectTextFieldLabel extends StatelessWidget {
   const RoundedRectTextFieldLabel({
-    Key key, @required this.text,
+    Key key,
+    @required this.text,
   }) : super(key: key);
 
   final String text;
@@ -666,13 +741,14 @@ class RoundedRectTextFieldLabel extends StatelessWidget {
 }
 
 class SlidingText extends StatelessWidget {
-   SlidingText({
+  SlidingText({
     Key key,
     @required this.buttonCarouselController,
     @required this.textPage,
     this.items,
     this.height,
-    this.width, @required this.onChanged,
+    this.width,
+    @required this.onChanged,
   }) : super(key: key);
 
   final CarouselController buttonCarouselController;
@@ -726,33 +802,32 @@ class FormErrMessage extends StatelessWidget {
   }
 }
 
-
-void openMessageDialogue(BuildContext context, Widget widget) =>
-    showDialog(
+void openMessageDialogue(BuildContext context, Widget widget) => showDialog(
       context: context,
-      builder: (context) =>
-          Theme(
-            data: Theme.of(context).copyWith(
-                primaryColor: primaryRedDark),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                widget,
-              ],
-            ),
-          ),
+      builder: (context) => Theme(
+        data: Theme.of(context).copyWith(primaryColor: primaryRedDark),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            widget,
+          ],
+        ),
+      ),
     );
 
-
-
 class SignUpMessage extends StatelessWidget {
-
   final String text;
   final Color color;
   final IconData icon;
   final String text2;
 
-  const SignUpMessage({Key key, @required this.text, @required this.color,@required this.icon, @required this.text2}) : super(key: key);
+  const SignUpMessage(
+      {Key key,
+      @required this.text,
+      @required this.color,
+      @required this.icon,
+      @required this.text2})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -767,7 +842,8 @@ class SignUpMessage extends StatelessWidget {
             Card(
               elevation: 6.0,
               child: Container(
-                padding: EdgeInsets.only(left: 20.0, bottom: 0.0, right: 10.0, top: 40.0),
+                padding: EdgeInsets.only(
+                    left: 20.0, bottom: 0.0, right: 10.0, top: 40.0),
                 height: 280.0,
                 width: double.infinity,
                 color: Colors.white,
@@ -775,12 +851,12 @@ class SignUpMessage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                   Text(
-                     text2,
-                     style: TextStyle(
-                       fontSize: 40.0,
-                     ),
-                   ),
+                    Text(
+                      text2,
+                      style: TextStyle(
+                        fontSize: 40.0,
+                      ),
+                    ),
                     Text(
                       text,
                       textAlign: TextAlign.center,
@@ -817,8 +893,9 @@ class SignUpMessage extends StatelessWidget {
                 color: color,
                 borderRadius: BorderRadius.circular(50.0),
               ),
-              child: Icon(icon,
-              color: Colors.white,
+              child: Icon(
+                icon,
+                color: Colors.white,
                 size: 40.0,
               ),
             ),
@@ -829,16 +906,22 @@ class SignUpMessage extends StatelessWidget {
   }
 }
 
-Future<bool> checkInternetConnectivity( BuildContext context) async {
+Future<bool> checkInternetConnectivity(BuildContext context) async {
   try {
     final result = await InternetAddress.lookup('google.com');
     if (result.isNotEmpty && result[0].rawAddress.isNotEmpty) {
       print('connected');
       return true;
-
     }
   } on SocketException catch (_) {
-    openMessageDialogue(context, SignUpMessage(text: "Ooops. No Internet Access.\n try again later", color: primaryRed, icon: Icons.close, text2: "Failed",),
+    openMessageDialogue(
+      context,
+      SignUpMessage(
+        text: "Ooops. No Internet Access.\n try again later",
+        color: primaryRed,
+        icon: Icons.close,
+        text2: "Failed",
+      ),
     );
     return false;
   }

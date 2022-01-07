@@ -308,7 +308,7 @@ class _MenuScreenState extends State<MenuScreenLifestyle> with TickerProviderSta
                       height: 35.0,
                       width: 35.0,
                       iconColor: Colors.white,
-                      onpressed: () => Navigator.pushNamed(context, BankingScreen.id),
+                      onpressed: () => Navigator.pushReplacementNamed(context, BankingScreen.id),
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top:3.0, bottom: 6.0),

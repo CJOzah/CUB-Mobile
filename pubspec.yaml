@@ -49,6 +49,13 @@ dependencies:
   firebase_auth: ^0.18.2
   cloud_firestore: ^0.14.2
 
+dependency_overrides:
+  country_pickers:
+    git:
+      url: git://github.com/justkawal/country_pickers.git
+      ref: master
+
+
 
 dev_dependencies:
   flutter_test:

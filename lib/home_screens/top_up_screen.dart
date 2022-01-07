@@ -3,6 +3,7 @@ import 'package:country_pickers/country_pickers.dart';
 import 'package:cub_mobile/country_data.dart';
 import 'package:cub_mobile/loading_screen.dart';
 import 'package:cub_mobile/main.dart';
+import 'package:cub_mobile/size_config.dart';
 import 'package:cub_mobile/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +50,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
@@ -117,6 +119,7 @@ class _TopUpScreenState extends State<TopUpScreen> {
                               phoneNumber = value;
                             });
                           },
+                          validate: null,
                         ),
                       ),
                       Padding(
@@ -541,8 +544,8 @@ class _TopUpScreenState extends State<TopUpScreen> {
                             ),
                             RoundedRectTextField(
                               borderColor: dividerColor,
-                              width: 192,
-                              height: 40.0,
+                              width: SizeConfig.sW * 50,
+                              height: SizeConfig.sW * 11,
                               onchanged: (value) {
                                 setState(() {
                                   amount = value;
